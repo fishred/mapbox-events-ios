@@ -17,12 +17,10 @@ NSString * const MMEApplicationStateUnknown = @"Unknown";
     size_t size;
     sysctlbyname(typeSpecifier, NULL, &size, NULL, 0);
 
-    char *answer = malloc(size);
-    sysctlbyname(typeSpecifier, answer, &size, NULL, 0);
+    NSMutableData *answer = [NSMutableData dataWithLength:size];
+    sysctlbyname(typeSpecifier, answer.mutableBytes, &size, NULL, 0);
 
-    NSString *results = [NSString stringWithCString:answer encoding: NSUTF8StringEncoding];
-
-    free(answer);
+    NSString *results = [NSString.alloc initWithData:answer encoding:NSUTF8StringEncoding];
     return results;
 }
 
