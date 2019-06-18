@@ -43,13 +43,12 @@
 
 - (void)processRequest:(NSURLRequest *)request completionHandler:(void (^)(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error))completionHandler {
     dispatch_async(self.serialQueue, ^{
-        __block NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
+        NSURLSessionDataTask *dataTask = [self.session dataTaskWithRequest:request completionHandler:^(NSData * _Nullable data, NSURLResponse * _Nullable response, NSError * _Nullable error) {
             if (completionHandler) {
                 dispatch_async(dispatch_get_main_queue(), ^{
                     completionHandler(data, response, error);
                 });
             }
-            dataTask = nil;
         }];
         [dataTask resume];
     });
@@ -57,7 +56,7 @@
 
 #pragma mark NSURLSessionDelegate
 
-- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {    
+- (void)URLSession:(NSURLSession *)session didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
     [NSOperationQueue.mainQueue addOperationWithBlock:^{
         [self.certPin handleChallenge:challenge completionHandler:completionHandler];
     }];
